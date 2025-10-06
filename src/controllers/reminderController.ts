@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Response } from "express";
-import { AuthRequest } from "../middlewares/auth";
+import { AuthRequest } from "../middlewares/authMiddleware";
 import { reminders } from "../db/schema";
 import { db } from "../db";
 

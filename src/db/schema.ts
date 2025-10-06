@@ -12,11 +12,7 @@ import {
 import { relations } from "drizzle-orm";
 
 // ---------------- ENUMS ----------------
-export const modeNameEnum = pgEnum("mode_name", [
-  "standard",
-  "extended",
-  "longRun",
-]);
+
 export const reminderPriorityEnum = pgEnum("reminder_priority", [
   "low",
   "medium",
@@ -44,7 +40,7 @@ export const modes = pgTable("modes", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 
-  name: modeNameEnum("name").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
   focusTime: integer("focus_time").notNull(),
   shortBreak: integer("short_break").notNull(),
   longBreak: integer("long_break").notNull(),

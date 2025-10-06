@@ -21,7 +21,6 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
-
 app.use("/timer", timerRoutes);
 app.use("/hobby", hobbyRoutes);
 app.use("/todo", todoRoutes);
