@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { eq } from "drizzle-orm";
-import { db } from "../db";
+import { db, seedDefaultModesForUser } from "../db";
 import { users } from "../db/schema";
 
 const router = Router();
@@ -39,6 +39,8 @@ export const signup = async (req, res) => {
         password: hashedPassword,
       })
       .returning({ id: users.id, name: users.name, email: users.email });
+
+    await seedDefaultModesForUser(newUser.id);
 
     // generate token
     const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, {

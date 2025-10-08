@@ -1,4 +1,3 @@
-CREATE TYPE "public"."mode_name" AS ENUM('standard', 'extended', 'longRun');--> statement-breakpoint
 CREATE TYPE "public"."reminder_priority" AS ENUM('low', 'medium', 'high');--> statement-breakpoint
 CREATE TYPE "public"."todo_status" AS ENUM('TODO', 'In Progress', 'Done', 'Kill');--> statement-breakpoint
 CREATE TABLE "habits" (
@@ -11,7 +10,7 @@ CREATE TABLE "habits" (
 CREATE TABLE "modes" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
-	"name" "mode_name" NOT NULL,
+	"name" varchar(255) NOT NULL,
 	"focus_time" integer NOT NULL,
 	"short_break" integer NOT NULL,
 	"long_break" integer NOT NULL

@@ -1,5 +1,5 @@
 {
-  "id": "5626fcdd-5528-4125-aafa-fb21b6fb8b7c",
+  "id": "8428feff-cca6-4a33-a79c-d93901c47e90",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -73,8 +73,7 @@
         },
         "name": {
           "name": "name",
-          "type": "mode_name",
-          "typeSchema": "public",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -308,15 +307,6 @@
     }
   },
   "enums": {
-    "public.mode_name": {
-      "name": "mode_name",
-      "schema": "public",
-      "values": [
-        "standard",
-        "extended",
-        "longRun"
-      ]
-    },
     "public.reminder_priority": {
       "name": "reminder_priority",
       "schema": "public",
