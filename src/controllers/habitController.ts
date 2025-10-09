@@ -6,7 +6,7 @@ import { habits } from "../db/schema";
 
 export async function createHabit(req: AuthRequest, res: Response) {
   try {
-    const { name, completions } = req.body; // completions: [true, false, ...]
+    const { name, completions } = req.body;
     const [newHabit] = await db
       .insert(habits)
       .values({
