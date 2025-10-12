@@ -14,36 +14,63 @@ export async function createTodo(req: AuthRequest, res: Response) {
         title,
         description,
         status,
-        dueDate,
+        dueDate: dueDate ? new Date(dueDate) : null,
       })
       .returning();
     res.json(todo);
-  } catch {
+  } catch (error) {
+    console.error("Error creating todo:", error);
     res.status(500).json({ error: "Failed to create todo" });
   }
 }
 
 export async function getTodos(req: AuthRequest, res: Response) {
-  const userTodos = await db
-    .select()
-    .from(todos)
-    .where(eq(todos.userId, req.user!.userId));
-  res.json(userTodos);
+  try {
+    const userTodos = await db
+      .select()
+      .from(todos)
+      .where(eq(todos.userId, req.user!.userId));
+    res.json(userTodos);
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    res.status(500).json({ error: "Failed to fetch todos" });
+  }
 }
 
 export async function updateTodo(req: AuthRequest, res: Response) {
-  const { id } = req.params;
-  const updates = req.body;
-  const [updated] = await db
-    .update(todos)
-    .set(updates)
-    .where(eq(todos.id, Number(id)))
-    .returning();
-  res.json(updated);
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    // Handle dueDate conversion if present
+    if (updates.dueDate) {
+      updates.dueDate = new Date(updates.dueDate);
+    }
+
+    const [updated] = await db
+      .update(todos)
+      .set(updates)
+      .where(eq(todos.id, parseInt(id)))
+      .returning();
+
+    if (!updated) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    res.status(500).json({ error: "Failed to update todo" });
+  }
 }
 
 export async function deleteTodo(req: AuthRequest, res: Response) {
-  const { id } = req.params;
-  await db.delete(todos).where(eq(todos.id, Number(id)));
-  res.json({ message: "Todo deleted" });
+  try {
+    const { id } = req.params;
+    const result = await db.delete(todos).where(eq(todos.id, parseInt(id)));
+    res.json({ message: "Todo deleted" });
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    res.status(500).json({ error: "Failed to delete todo" });
+  }
 }
