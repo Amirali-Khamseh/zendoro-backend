@@ -8,6 +8,7 @@ import reminderRoutes from "./routes/reminderRoutes";
 import todoRoutes from "./routes/todoRoutes";
 import hobbyRoutes from "./routes/hobbyRoutes";
 import agentRoutes from "./routes/agentRoutes";
+import fitRoutes from "./routes/fitRoutes";
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(helmet());
@@ -28,6 +29,7 @@ app.use("/hobby", hobbyRoutes);
 app.use("/todo", todoRoutes);
 app.use("/reminder", reminderRoutes);
 app.use("/agent", agentRoutes);
+app.use("/fit", fitRoutes);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
