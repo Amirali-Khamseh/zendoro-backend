@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc && node dist/src/server.js",
+    "build": "npx tsc",
     "dev": "node --watch dist/src/server.js",
     "db:studio": "npx drizzle-kit studio --port=3333",
     "db:migrate": "npx drizzle-kit migrate",
@@ -24,6 +24,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
