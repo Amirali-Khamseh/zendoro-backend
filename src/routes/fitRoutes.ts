@@ -1,7 +1,11 @@
 import { Router } from "express";
-import fitController from "../controllers/fitController";
+import { storeTokens, getSteps, quickDaily } from "../controllers/fitController";
+import { authenticateToken } from "../middlewares/authMiddleware";
 
 const router = Router();
-router.use("/", fitController);
+
+router.post("/tokens", storeTokens);
+router.get("/steps", authenticateToken, getSteps);
+router.post("/daily", authenticateToken, quickDaily);
 
 export default router;
