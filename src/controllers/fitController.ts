@@ -45,11 +45,18 @@ export const getSteps = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Query params start and end (ms epoch) required and start < end" });
     }
 
-  await getAuthenticatedClient();
+    await getAuthenticatedClient();
     const data = await fetchSteps(start, end);
     return res.status(200).json({ buckets: data });
   } catch (err: any) {
     console.error("/fit/steps error:", err?.message || err);
+    if (err?.message?.includes("No stored tokens")) {
+      return res.status(401).json({ error: "Google Fit not connected. Please authenticate first." });
+    }
+    if (err?.message?.includes("Invalid time range")) {
+      return res.status(400).json({ error: "Invalid time range provided" });
+    }
+    
     return res.status(500).json({ error: String(err?.message || err) });
   }
 };
@@ -66,19 +73,20 @@ export const quickDaily = async (req: Request, res: Response) => {
     const start = now.getTime();
     const end = start + 24 * 60 * 60 * 1000 - 1;
 
-  await getAuthenticatedClient();
+    await getAuthenticatedClient();
     const data = await fetchSteps(start, end);
     const total = data.reduce((s, b) => s + (b.steps || 0), 0);
     return res.status(200).json({ date: new Date(start).toISOString(), totalSteps: total, buckets: data });
   } catch (err: any) {
     console.error("/fit/daily error:", err?.message || err);
+    
+    // Handle specific error cases
+    if (err?.message?.includes("No stored tokens")) {
+      return res.status(401).json({ error: "Google Fit not connected. Please authenticate first." });
+    }
+    
     return res.status(500).json({ error: String(err?.message || err) });
   }
 };
 
-const router = Router();
-router.post("/tokens", storeTokens);
-router.get("/steps", getSteps);
-router.post("/daily", quickDaily);
-
-export default router;
+// Router is now handled in fitRoutes.ts
