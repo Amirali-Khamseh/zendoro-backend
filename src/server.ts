@@ -30,6 +30,6 @@ app.use("/reminder", reminderRoutes);
 app.use("/agent", agentRoutes);
 
 app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+  return console.log(`Express is listening at PORT: ${port}`);
 });
 export default app;

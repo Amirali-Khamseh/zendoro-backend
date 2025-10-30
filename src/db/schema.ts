@@ -47,7 +47,6 @@ export const modes = pgTable("modes", {
 });
 
 // ---------------- HABITS ----------------
-// completions = array of 7 booleans (for each weekday)
 export const habits = pgTable("habits", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
@@ -86,13 +85,21 @@ export const todos = pgTable("todos", {
   dueDate: timestamp("due_date", { withTimezone: false }).default(null),
 });
 
+// ---------------- SESSION FOCUS COUNTS ----------------
+export const sessionFocusCounts = pgTable("session_focus_counts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+
+  sessionCount: integer("session_count").notNull(),
+  date: date("date").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: false })
+    .defaultNow()
+    .notNull(),
+});
+
 // ---------------- RELATIONS ----------------
-export const userRelations = relations(users, ({ many }) => ({
-  modes: many(modes),
-  habits: many(habits),
-  reminders: many(reminders),
-  todos: many(todos),
-}));
 
 export const modeRelations = relations(modes, ({ one }) => ({
   user: one(users, {
@@ -101,11 +108,22 @@ export const modeRelations = relations(modes, ({ one }) => ({
   }),
 }));
 
-export const habitRelations = relations(habits, ({ one }) => ({
-  user: one(users, {
-    fields: [habits.userId],
-    references: [users.id],
-  }),
+export const sessionFocusCountRelations = relations(
+  sessionFocusCounts,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [sessionFocusCounts.userId],
+      references: [users.id],
+    }),
+  })
+);
+
+export const userRelations = relations(users, ({ many }) => ({
+  modes: many(modes),
+  habits: many(habits),
+  reminders: many(reminders),
+  todos: many(todos),
+  sessionFocusCounts: many(sessionFocusCounts),
 }));
 
 export const reminderRelations = relations(reminders, ({ one }) => ({
