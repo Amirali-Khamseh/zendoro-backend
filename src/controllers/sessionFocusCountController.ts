@@ -2,7 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { db } from "../db";
 import { sessionFocusCounts } from "../db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 
 export async function setSessionFocusCount(req: AuthRequest, res: Response) {
   try {
@@ -19,19 +19,53 @@ export async function setSessionFocusCount(req: AuthRequest, res: Response) {
         .json({ error: "Missing or invalid sessionCount/date" });
     }
 
-    // Insert the session count for the user/date
-    const [inserted] = await db
-      .insert(sessionFocusCounts)
-      .values({
-        userId,
-        sessionCount,
-        date,
-      })
-      .returning();
+    // Check if an entry already exists for this user and date
+    const existingEntry = await db
+      .select()
+      .from(sessionFocusCounts)
+      .where(
+        and(
+          eq(sessionFocusCounts.userId, userId),
+          eq(sessionFocusCounts.date, date)
+        )
+      )
+      .limit(1);
 
-    console.log("Saved session focus count:", inserted);
+    let result;
 
-    res.status(200).json({ message: "Session focus saved", data: inserted });
+    if (existingEntry.length > 0) {
+      // Update the existing entry by incrementing the count
+      const [updated] = await db
+        .update(sessionFocusCounts)
+        .set({
+          sessionCount: sql`${sessionFocusCounts.sessionCount} + ${sessionCount}`,
+        })
+        .where(
+          and(
+            eq(sessionFocusCounts.userId, userId),
+            eq(sessionFocusCounts.date, date)
+          )
+        )
+        .returning();
+
+      result = updated;
+      console.log("Updated session focus count:", updated);
+    } else {
+      // Insert a new entry
+      const [inserted] = await db
+        .insert(sessionFocusCounts)
+        .values({
+          userId,
+          sessionCount,
+          date,
+        })
+        .returning();
+
+      result = inserted;
+      console.log("Saved new session focus count:", inserted);
+    }
+
+    res.status(200).json({ message: "Session focus saved", data: result });
   } catch (error) {
     console.error("Error saving session focus count:", error);
     res.status(500).json({ error: "Internal server error" });
