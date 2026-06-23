@@ -8,11 +8,13 @@ import reminderRoutes from "./routes/reminderRoutes";
 import todoRoutes from "./routes/todoRoutes";
 import hobbyRoutes from "./routes/hobbyRoutes";
 import agentRoutes from "./routes/agentRoutes";
+import { sanitizeInput } from "./middlewares/inputSanitizationMiddleware";
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(sanitizeInput);
 
 app.get("/health", (req, res) => {
   res.status(200).json({
