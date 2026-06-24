@@ -89,7 +89,7 @@ export async function getSessionFocusCount(req: AuthRequest, res: Response) {
     const sessionCount = sessionCountResult[0];
 
     if (!sessionCount) {
-      return res.status(404).json({ error: "Session focus not found" });
+      return res.status(200).json({ data: { sessionCount: 0 } });
     }
 
     res.status(200).json({ data: sessionCount });
