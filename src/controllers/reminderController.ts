@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and, sql, type SQL } from "drizzle-orm";
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { reminders } from "../db/schema";
@@ -26,10 +26,20 @@ export async function createReminder(req: AuthRequest, res: Response) {
 }
 
 export async function getReminders(req: AuthRequest, res: Response) {
+  // Optional date-range filter on date (?from=YYYY-MM-DD&to=YYYY-MM-DD),
+  // inclusive. No params returns all reminders.
+  const { from, to } = req.query;
+  const conditions: SQL[] = [eq(reminders.userId, req.user!.userId)];
+  if (typeof from === "string") {
+    conditions.push(sql`${reminders.date} >= ${from}::date`);
+  }
+  if (typeof to === "string") {
+    conditions.push(sql`${reminders.date} <= ${to}::date`);
+  }
   const userReminders = await db
     .select()
     .from(reminders)
-    .where(eq(reminders.userId, req.user!.userId));
+    .where(and(...conditions));
   res.json(userReminders);
 }
 

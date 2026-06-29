@@ -78,6 +78,29 @@ export async function getSessionFocusCount(req: AuthRequest, res: Response) {
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
+
+    // With a date range (?from=YYYY-MM-DD&to=YYYY-MM-DD), return the sum of
+    // sessions across the range; without it, fall back to the latest day's count.
+    const { from, to } = req.query;
+    if (typeof from === "string" || typeof to === "string") {
+      const conditions = [eq(sessionFocusCounts.userId, userId)];
+      if (typeof from === "string") {
+        conditions.push(sql`${sessionFocusCounts.date} >= ${from}::date`);
+      }
+      if (typeof to === "string") {
+        conditions.push(sql`${sessionFocusCounts.date} <= ${to}::date`);
+      }
+      const [row] = await db
+        .select({
+          total: sql<number>`COALESCE(SUM(${sessionFocusCounts.sessionCount}), 0)`,
+        })
+        .from(sessionFocusCounts)
+        .where(and(...conditions));
+      return res
+        .status(200)
+        .json({ data: { sessionCount: Number(row?.total ?? 0) } });
+    }
+
     // Fetch the session count for the user
     const sessionCountResult = await db
       .select()

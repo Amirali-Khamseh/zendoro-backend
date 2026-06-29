@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and, sql, type SQL } from "drizzle-orm";
 import { Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
 import { todos } from "../db/schema";
@@ -26,10 +26,20 @@ export async function createTodo(req: AuthRequest, res: Response) {
 
 export async function getTodos(req: AuthRequest, res: Response) {
   try {
+    // Optional date-range filter on due_date (?from=YYYY-MM-DD&to=YYYY-MM-DD).
+    // `to` is treated as inclusive of the whole day. No params returns all.
+    const { from, to } = req.query;
+    const conditions: SQL[] = [eq(todos.userId, req.user!.userId)];
+    if (typeof from === "string") {
+      conditions.push(sql`${todos.dueDate} >= ${from}::date`);
+    }
+    if (typeof to === "string") {
+      conditions.push(sql`${todos.dueDate} < (${to}::date + interval '1 day')`);
+    }
     const userTodos = await db
       .select()
       .from(todos)
-      .where(eq(todos.userId, req.user!.userId));
+      .where(and(...conditions));
     res.json(userTodos);
   } catch (error) {
     console.error("Error fetching todos:", error);
