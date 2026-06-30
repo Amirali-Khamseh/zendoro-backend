@@ -7,6 +7,7 @@ import timerRoutes from "./routes/timerRoutes";
 import reminderRoutes from "./routes/reminderRoutes";
 import todoRoutes from "./routes/todoRoutes";
 import hobbyRoutes from "./routes/hobbyRoutes";
+import goalRoutes from "./routes/goalRoutes";
 import agentRoutes from "./routes/agentRoutes";
 import { sanitizeInput } from "./middlewares/inputSanitizationMiddleware";
 const app = express();
@@ -29,6 +30,7 @@ app.use("/timer", timerRoutes);
 app.use("/hobby", hobbyRoutes);
 app.use("/todo", todoRoutes);
 app.use("/reminder", reminderRoutes);
+app.use("/goal", goalRoutes);
 app.use("/agent", agentRoutes);
 
 app.listen(port, () => {
