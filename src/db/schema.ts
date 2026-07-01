@@ -37,6 +37,8 @@ export const users = pgTable("users", {
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
+  avatarUrl: text("avatar_url"),
+  avatarKey: text("avatar_key"),
 });
 
 // ---------------- MODES ----------------
