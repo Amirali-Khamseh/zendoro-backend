@@ -9,6 +9,7 @@ import todoRoutes from "./routes/todoRoutes";
 import hobbyRoutes from "./routes/hobbyRoutes";
 import goalRoutes from "./routes/goalRoutes";
 import agentRoutes from "./routes/agentRoutes";
+import userRoutes from "./routes/userRoutes";
 import { sanitizeInput } from "./middlewares/inputSanitizationMiddleware";
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use("/todo", todoRoutes);
 app.use("/reminder", reminderRoutes);
 app.use("/goal", goalRoutes);
 app.use("/agent", agentRoutes);
+app.use("/user", userRoutes);
 
 app.listen(port, () => {
   return console.log(`Express is listening at PORT: ${port}`);
